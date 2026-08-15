@@ -1,15 +1,39 @@
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle, type MySql2Database } from "drizzle-orm/mysql2";
+import { createPool, type PoolOptions } from "mysql2/promise";
 import { InsertUser, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
-let _db: ReturnType<typeof drizzle> | null = null;
+let _db: MySql2Database | null = null;
+
+export function tidbPoolOptions(connectionString: string): PoolOptions {
+  const url = new URL(connectionString);
+  const database = decodeURIComponent(url.pathname.replace(/^\//, ""));
+
+  if (!url.hostname || !url.username || !database) {
+    throw new Error("DATABASE_URL must include host, user, and database");
+  }
+
+  return {
+    host: url.hostname,
+    port: Number(url.port || 3306),
+    user: decodeURIComponent(url.username),
+    password: decodeURIComponent(url.password),
+    database,
+    ssl: { minVersion: "TLSv1.2", rejectUnauthorized: true },
+    waitForConnections: true,
+    connectionLimit: 5,
+    enableKeepAlive: true,
+  };
+}
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const options = tidbPoolOptions(process.env.DATABASE_URL);
+      _db = drizzle(createPool(options)) as MySql2Database;
+      console.info(`[Database] MySQL pool initialized for ${options.host}:${options.port}/${options.database}`);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
