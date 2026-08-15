@@ -11,6 +11,7 @@ import {
   Shuffle,
   SkipBack,
   SkipForward,
+  LampDesk,
   Volume2,
   VolumeX,
 } from "lucide-react";
@@ -18,6 +19,7 @@ import { SiteFooter, SiteHeader } from "@/components/SiteChrome";
 import RadioTuner from "@/components/RadioTuner";
 import TrackArtwork from "@/components/TrackArtwork";
 import { countryName, useRoomPresence } from "@/hooks/useRoomPresence";
+import { INITIAL_LAMP_MODE, isLampLit, toggleLampMode } from "@/lib/lampMode";
 import {
   type PlaybackSnapshot,
   YoutubeMusicProvider,
@@ -65,7 +67,9 @@ export default function Home() {
   const [confirmedListening, setConfirmedListening] = useState(false);
   const [listenerEligible, setListenerEligible] = useState(false);
   const [dialActive, setDialActive] = useState(false);
+  const [lampMode, setLampMode] = useState(INITIAL_LAMP_MODE);
   const room = useRoomPresence(confirmedListening);
+  const lampOn = isLampLit(lampMode);
 
   useEffect(() => {
     if (!playerMount.current) return;
@@ -102,7 +106,7 @@ export default function Home() {
   }
 
   return (
-    <div className="site-shell">
+    <div className={`site-shell ${lampOn ? "is-lamp-lit" : ""}`}>
       <div className="paper-grain" aria-hidden="true" />
       <div className="hidden-player" aria-hidden="true" ref={playerMount} />
 
@@ -118,6 +122,17 @@ export default function Home() {
             <p className="nepali-line" lang="ne">पुराना गीत, सधैंका लागि</p>
           </div>
           <div className="hero-atmosphere" aria-hidden="true"><img src={HERO_ART} alt="" /><div className="image-wash" /></div>
+          <div className="lamp-glow" aria-hidden="true" />
+          <button
+            className={`lamp-control ${lampOn ? "is-on" : ""}`}
+            type="button"
+            onClick={() => setLampMode(toggleLampMode)}
+            aria-pressed={lampOn}
+            aria-label={lampOn ? "Turn lamp off and switch to light mode" : "Turn lamp on and switch to dark mode"}
+          >
+            <LampDesk strokeWidth={1.45} aria-hidden="true" />
+            <span aria-hidden="true">{lampOn ? "Lamp on" : "Lamp off"}</span>
+          </button>
 
           <article className={`radio-object status-${player.status} ${dialActive ? "is-tuning" : ""}`} aria-labelledby="now-playing-title">
             <div className="radio-registration" aria-hidden="true"><span /><span /><span /></div>

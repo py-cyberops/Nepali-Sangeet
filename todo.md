@@ -20,6 +20,16 @@ The canonical production origin is **https://sangeet.pravingyawali.com.np/**. It
 - [x] Compare optimized assets against originals for visual/audio/font fidelity and verify the five static runtime paths in development and production builds.
 - [x] Save a checkpoint for the optimized split-deployment state after the final build and asset-size verification.
 
+## Interactive listening-room lamp
+
+- [x] Inspect the existing hero lamp artwork, page structure, and theme tokens for a minimal accessible mode-control implementation.
+- [x] Add an accessible interactive lamp control that changes the listening room between light mode and dark lamp-lit mode without altering player or presence behavior.
+- [x] Validate keyboard interaction, reduced-motion behavior, light/dark contrast, responsive rendering, and existing listening-room functionality.
+
+## Manual Render deployment guidance
+
+- [ ] Guide the user through selecting an always-on Render backend service and manual Cloudflare Pages deployment settings without performing account, deployment, or DNS actions.
+
 ## Cloudflare Pages deployment handoff
 
 - [x] Remove the “The Sound of Nepali Radio” bilingual editorial folio and its dedicated styling, restoring the original post-player page flow.
