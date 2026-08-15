@@ -36,4 +36,24 @@ describe("anonymous presence helpers", () => {
     expect(summary.message).toContain("://<redacted>:<redacted>@gateway.example");
     expect(summary.message).not.toContain("private-password");
   });
+
+  it("includes a redacted nested mysql driver cause from a wrapped query error", () => {
+    const summary = presenceDatabaseErrorSummary({
+      name: "DrizzleQueryError",
+      message: "Failed query: delete from listener_presence",
+      cause: {
+        code: "ER_ACCESS_DENIED_ERROR",
+        errno: 1045,
+        sqlState: "28000",
+        message: "Access denied for mysql://room.root:private-password@gateway.example:4000/sangeet_ghar",
+      },
+    });
+
+    expect(summary.cause).toMatchObject({
+      code: "ER_ACCESS_DENIED_ERROR",
+      errno: 1045,
+      sqlState: "28000",
+    });
+    expect(summary.cause?.message).not.toContain("private-password");
+  });
 });

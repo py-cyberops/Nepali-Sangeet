@@ -17,6 +17,7 @@ export type PresenceSnapshot = {
 type HeaderMap = Record<string, string | string[] | undefined>;
 
 type DatabaseErrorLike = {
+  cause?: unknown;
   code?: unknown;
   errno?: unknown;
   message?: unknown;
@@ -28,7 +29,7 @@ function stringField(value: unknown) {
   return typeof value === "string" ? value : undefined;
 }
 
-export function presenceDatabaseErrorSummary(error: unknown) {
+function databaseErrorFields(error: unknown) {
   const candidate = (error && typeof error === "object" ? error : {}) as DatabaseErrorLike;
   const rawMessage = stringField(candidate.message) ?? String(error);
 
@@ -38,6 +39,16 @@ export function presenceDatabaseErrorSummary(error: unknown) {
     errno: typeof candidate.errno === "number" ? candidate.errno : undefined,
     sqlState: stringField(candidate.sqlState),
     message: rawMessage.replace(/:\/\/[^:@/]+:[^@/]+@/g, "://<redacted>:<redacted>@"),
+  };
+}
+
+export function presenceDatabaseErrorSummary(error: unknown) {
+  const candidate = (error && typeof error === "object" ? error : {}) as DatabaseErrorLike;
+  const cause = candidate.cause;
+
+  return {
+    ...databaseErrorFields(error),
+    cause: cause && cause !== error ? databaseErrorFields(cause) : undefined,
   };
 }
 
