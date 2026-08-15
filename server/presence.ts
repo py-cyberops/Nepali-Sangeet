@@ -16,6 +16,31 @@ export type PresenceSnapshot = {
 
 type HeaderMap = Record<string, string | string[] | undefined>;
 
+type DatabaseErrorLike = {
+  code?: unknown;
+  errno?: unknown;
+  message?: unknown;
+  name?: unknown;
+  sqlState?: unknown;
+};
+
+function stringField(value: unknown) {
+  return typeof value === "string" ? value : undefined;
+}
+
+export function presenceDatabaseErrorSummary(error: unknown) {
+  const candidate = (error && typeof error === "object" ? error : {}) as DatabaseErrorLike;
+  const rawMessage = stringField(candidate.message) ?? String(error);
+
+  return {
+    name: stringField(candidate.name) ?? "DatabaseError",
+    code: stringField(candidate.code),
+    errno: typeof candidate.errno === "number" ? candidate.errno : undefined,
+    sqlState: stringField(candidate.sqlState),
+    message: rawMessage.replace(/:\/\/[^:@/]+:[^@/]+@/g, "://<redacted>:<redacted>@"),
+  };
+}
+
 export function hashAnonymousSession(sessionToken: string) {
   return createHash("sha256").update(`sangeet-ghar-presence:${sessionToken}`).digest("hex");
 }
@@ -39,7 +64,12 @@ function cutoffDate(now = Date.now()) {
 async function cleanExpired(now = Date.now()) {
   const db = await getDb();
   if (!db) return null;
-  await db.delete(listenerPresence).where(lt(listenerPresence.lastSeen, cutoffDate(now)));
+  try {
+    await db.delete(listenerPresence).where(lt(listenerPresence.lastSeen, cutoffDate(now)));
+  } catch (error) {
+    console.error("[Presence] Expiry cleanup failed", presenceDatabaseErrorSummary(error));
+    throw error;
+  }
   return db;
 }
 
