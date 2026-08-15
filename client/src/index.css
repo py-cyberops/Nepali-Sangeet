@@ -22,3 +22,18 @@
 
 /* Himalayan Letterpress information pages: wide editorial margins, little chrome, and no dashboard conventions. */
 .info-shell{overflow:visible}.info-main{position:relative;z-index:2;max-width:1140px;margin:0 auto;padding:clamp(78px,11vw,150px) clamp(24px,8vw,128px) clamp(84px,10vw,130px)}.info-heading{max-width:760px;padding-bottom:clamp(55px,8vw,96px);border-bottom:1px solid var(--line)}.info-heading h1{margin:0;max-width:710px;font-family:"DM Serif Display",Georgia,serif;font-size:clamp(3.1rem,7vw,6.3rem);font-weight:400;line-height:.92;letter-spacing:-.06em}.info-article{display:grid;gap:40px;max-width:760px;padding-top:54px;color:var(--ink-soft);font-family:"DM Serif Display",Georgia,serif;font-size:1.18rem;line-height:1.55}.info-article p{margin:0}.info-article .info-lede{color:var(--ink);font-size:clamp(1.42rem,2.4vw,2rem);line-height:1.35}.info-article section{display:grid;gap:15px;padding-top:29px;border-top:1px solid var(--line)}.info-article h2{margin:0;color:var(--ink);font-family:"DM Serif Display",Georgia,serif;font-size:clamp(1.8rem,3vw,2.7rem);font-weight:400;line-height:1;letter-spacing:-.04em}.info-article a{color:var(--madder);text-decoration-thickness:1px;text-underline-offset:3px}.quiet-link{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.09em;text-transform:uppercase}.contact-grid{grid-template-columns:1fr 1fr;gap:25px}.contact-grid>div{display:grid;gap:11px}.contact-label{color:var(--madder);font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase}.contact-address{display:inline-block;font-family:"DM Mono",monospace;font-size:clamp(.93rem,1.8vw,1.08rem);letter-spacing:-.02em;overflow-wrap:anywhere}@media (max-width:620px){.info-main{padding:78px 20px}.info-article{gap:32px;padding-top:39px;font-size:1.08rem}.contact-grid{grid-template-columns:1fr;gap:25px}.info-article section{padding-top:24px}}
+/* Sangeet Ghar — desktop player visibility refinement.
+   Append this block at the end of client/src/index.css. */
+@media (min-width:881px){
+  .listening-folio{
+    min-height:max(910px,calc(100vh - 95px));
+    padding-top:clamp(58px,6vw,86px);
+  }
+
+  .radio-object{
+    position:absolute;
+    top:clamp(345px,23vw,420px);
+    right:clamp(24px,8vw,128px);
+    margin:0;
+  }
+}
